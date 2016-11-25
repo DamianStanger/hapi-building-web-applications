@@ -19,6 +19,17 @@ server.route({
     }
 });
 
+server.route({
+    path: '/assets/{path*}',
+    method: 'GET',
+    handler: {
+        directory:{
+            path: './public',
+            listing: false
+        }
+    }
+})
+
 server .start(function(){
     console.log('Listening on ' + server.info.uri);
 });
