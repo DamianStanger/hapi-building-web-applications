@@ -6,10 +6,17 @@ const
 
 server.connection({port:3000});
 
+server.ext('onRequest', (request, reply) => {console.log('Request received at: ' + request.path); reply.continue()});
+
 server.route({
-    path: '/hello',
+    path:'/',
     method: 'GET',
-    handler: (request, reply) => reply('hello world')
+    // handler: function(request, reply) {
+    //     reply.file('templates/index.html');
+    // }
+    handler: {
+        file: 'templates/index.html'
+    }
 });
 
 server .start(function(){
