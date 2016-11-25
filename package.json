@@ -1,0 +1,14 @@
+{
+  "name": "hapi-greetings",
+  "version": "1.0.0",
+  "description": "This repository contains the starter code for the [Building Web Applications with hapi course on Pluralsight.com](http://www.pluralsight.com/courses/hapi-building-web-applications).",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "hapi": "^15.2.0"
+  }
+}
