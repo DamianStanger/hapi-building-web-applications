@@ -4,11 +4,21 @@ const
     Hapi = require('hapi'),
     server = new Hapi.Server(),
     uuid = require('uuid'),
-    cards = {};
+    fs = require('fs'),
+    cards = require('./cards.json');
+
+console.log(cards);
 
 server.connection({port:3000});
 
 server.ext('onRequest', (request, reply) => {console.log('Request received at: ' + request.path); reply.continue()});
+
+server.views({
+    engines: {
+        html: require('handlebars')
+    },
+    path: './templates'
+})
 
 server.route({
     path:'/',
@@ -57,9 +67,12 @@ function saveCard(card) {
         cards[id] = card;
 }
 
+function mapImages() {
+    return fs.readdirSync('./public/images/cards')
+}
 function newCardHandler(request, reply) {
     if(request.method==='get') {
-        reply.file('templates/new.html');
+        reply.view('new', {card_images: mapImages()});
     } else {
         var card = {
             name: request.payload.name,
@@ -75,13 +88,14 @@ function newCardHandler(request, reply) {
     }
 };
 function cardsHandler (request, reply) {
-    reply.file('templates/cards.html');
+    reply.view('cards', {cards: cards});
 };
 
 function deleteCardHandler(request, reply){
     delete cards[request.params.id];
+    reply();
 }
 
-server .start(function(){
+server.start(function(){
     console.log('Listening on ' + server.info.uri);
 });
