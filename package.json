@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "hapi": "^8.8.1",
-    "hapi-auth-cookie": "^2.2.0"
+    "hapi-auth-cookie": "^2.2.0",
+    "uuid": "^3.0.0"
   }
 }
