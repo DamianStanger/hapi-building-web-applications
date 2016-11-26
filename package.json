@@ -9,9 +9,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "boom": "^4.2.0",
     "handlebars": "^4.0.6",
     "hapi": "^8.8.1",
     "hapi-auth-cookie": "^2.2.0",
+    "joi": "^10.0.1",
     "uuid": "^3.0.0"
   }
 }

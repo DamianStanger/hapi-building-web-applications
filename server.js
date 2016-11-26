@@ -5,6 +5,8 @@ const
     server = new Hapi.Server(),
     uuid = require('uuid'),
     fs = require('fs'),
+    Joi = require('joi'),
+    Boom = require('boom'),
     cards = require('./cards.json');
 
 console.log(cards);
@@ -67,24 +69,35 @@ function saveCard(card) {
         cards[id] = card;
 }
 
-function mapImages() {
-    return fs.readdirSync('./public/images/cards')
-}
+
+var cardSchema = Joi.object().keys({
+    name: Joi.string().min(3).max(50).required(),
+    recipient_email: Joi.string().email().required(),
+    sender_name: Joi.string().min(3).max(50).required(),
+    sender_email: Joi.string().email().required(),
+    card_image: Joi.string().regex(/.+\.(jpg|bmp|png|gif)\b/).required()
+})
+
 function newCardHandler(request, reply) {
     if(request.method==='get') {
         reply.view('new', {card_images: mapImages()});
     } else {
-        var card = {
-            name: request.payload.name,
-            recipient_email: request.payload.recipient_email,
-            sender_name: request.payload.sender_name,
-            sender_email: request.payload.sender_email,
-            card_image: request.payload.card_image
-        }
-        saveCard(card);
-        console.log(cards);
+        Joi.validate(request.payload, cardSchema, function(err, val) {
+            if(err){
+                return reply(Boom.badRequest(err.details[0].message));
+            }
+            var card = {
+                name: val.name,
+                recipient_email: val.recipient_email,
+                sender_name: val.sender_name,
+                sender_email: val.sender_email,
+                card_image: val.card_image
+            }
+            saveCard(card);
+            console.log(cards);
 
-        reply.redirect('/cards')
+            reply.redirect('/cards');
+        })
     }
 };
 function cardsHandler (request, reply) {
@@ -94,6 +107,10 @@ function cardsHandler (request, reply) {
 function deleteCardHandler(request, reply){
     delete cards[request.params.id];
     reply();
+}
+
+function mapImages() {
+    return fs.readdirSync('./public/images/cards')
 }
 
 server.start(function(){
