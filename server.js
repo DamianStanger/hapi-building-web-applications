@@ -13,7 +13,52 @@ console.log(cards);
 
 server.connection({port:3000});
 
-server.ext('onRequest', (request, reply) => {console.log('Request received at: ' + request.path); reply.continue()});
+server.register({
+    register: require('good'),
+    options: {
+        opsInterval: 5000,
+        reporters: [{
+            reporter: require('good-file'),
+            events: {ops: '*'},
+            config: {
+                path: './logs',
+                prefix: 'hapi-process',
+                rotate: 'daily'
+            }
+        },
+        {
+            reporter: require('good-file'),
+            events: {response: '*'},
+            config: {
+                path: './logs',
+                prefix: 'hapi-requests',
+                rotate: 'daily'
+            }
+        },
+        {
+            reporter: require('good-file'),
+            events: {error: '*'},
+            config: {
+                path: './logs',
+                prefix: 'hapi-error',
+                rotate: 'daily'
+            }
+        }]
+    }
+},
+function(err){
+    console.log(err);
+});
+
+server.ext('onPreResponse', (request, reply) => {
+    if(request.response.isBoom)
+    {
+        // console.log('error at: ' + request.path);
+        // console.log('error: ' + request.response);
+        return reply.view('error', request.response);
+    }
+    reply.continue()
+});
 
 server.views({
     engines: {
